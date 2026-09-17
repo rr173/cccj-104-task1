@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "8080:8080"
+    volumes:
+      - ota-data:/data          # SQLite 库 + 固件分块，重启不丢
+    environment:
+      OTA_CHUNK_SIZE: "262144"      # 断点续传分块大小（字节）
+      OTA_FAIL_THRESHOLD: "0.05"    # 默认失败率熔断阈值
+      OTA_MIN_SAMPLES: "20"         # 熔断生效的最小样本数
+    restart: unless-stopped
+
+  test:
+    build:
+      context: .
+      target: test
+    # 一次性运行：docker compose run --rm test
+
+volumes:
+  ota-data:
